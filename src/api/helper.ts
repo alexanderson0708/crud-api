@@ -1,7 +1,8 @@
 // The helper class contains helper methods for hashing, UUIDs and so on.
 
 import { IncomingMessage } from "node:http"
-import { UserDto } from "./helpers/interfaces"
+import { UserDto } from "./interfaces"
+import ServerError, { ErrorMsg } from "./errors"
 
 
 export const getBody = async(req:IncomingMessage): Promise<UserDto> => {
@@ -32,6 +33,6 @@ export const isValidUser = (user: UserDto) => {
     && user.hobbies.every((hobbie)=>typeof hobbie === "string")){
         return true
     }else{
-        return false
+        throw ServerError.badReqErr(ErrorMsg.INVALID_BODY)
     }
 }

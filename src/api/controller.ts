@@ -2,11 +2,11 @@
 
 import { IncomingMessage, ServerResponse } from "http";
 import { UserService } from "./service";
-import { UserDto } from "./helpers/interfaces";
-import { HttpCode } from "./errors";
+import { UserControllerInterface } from "./interfaces";
+import { HttpCode } from "./interfaces";
 import { getBody, isValidUser } from "./helper";
 
-export class UserController {
+export class UserController implements UserControllerInterface{
     constructor (private userService: UserService) {
 
     }
@@ -14,6 +14,8 @@ export class UserController {
     async getUser(req:IncomingMessage, res:ServerResponse<IncomingMessage>) {
         const[api, users, id] = req.url.split('/').slice(1)
         const user = await this.userService.getUser(id) 
+        console.log(user);
+        
         res.statusCode = HttpCode.OK
         res.end(JSON.stringify(user))
     }
@@ -30,8 +32,6 @@ export class UserController {
             const user = await this.userService.postUser(body) 
             res.statusCode = HttpCode.CREATED
             res.end(JSON.stringify(user))
-        }else{
-            console.log('body is not valid');     
         }
     }
 
@@ -42,8 +42,6 @@ export class UserController {
             const user = await this.userService.putUser(id, body) 
             res.statusCode = HttpCode.OK
             res.end(JSON.stringify(user))
-        }else{
-            console.log('body is not valid');     
         }
     }
 

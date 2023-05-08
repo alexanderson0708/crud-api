@@ -1,11 +1,5 @@
-export const enum HttpCode {
-    OK = 200,
-    CREATED = 201,
-    DELETED = 204,
-    BAD_REQUEST = 400,
-    NOT_FOUND = 404,
-    INTERNAL = 500,
-}
+import { HttpCode } from "./interfaces"
+
 
 export const enum ErrorMsg {
     INVALID_ID = "Invalid user id",
@@ -14,6 +8,7 @@ export const enum ErrorMsg {
     INTERNAL_ERR = "Server error",
     INVALID_ENDPOINT = "Endpoint is not available",
     INVALID_METHOD = "Method is not supported",
+    INVALID_REQ = "This method does not requered uuid!",
 }
 
 class ServerError extends Error{
