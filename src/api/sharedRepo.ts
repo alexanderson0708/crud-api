@@ -15,10 +15,14 @@ export type deleteUserMsg = ReturnType<typeof deleteUserMsg>
 
 type Message = getUserMsg | getUsersMsg | postUserMsg | putUserMsg | deleteUserMsg
 
-export type resMsg<T> = {
-    data:T
+export type dataRes<T> = {
+    data:T;
 }
-
+export type errRes = {
+    status:number;
+    message:string;
+}
+export type msgRes<T> = dataRes<T> & errRes
 
 export class UserSharedRepo { 
     constructor(){
@@ -27,11 +31,12 @@ export class UserSharedRepo {
 
     async getUsers(){
         process.send(getUsersMsg())
-        process.once("message", )
+        process.once("message", (msg)=>msg['data'])
     }
 
     async getUser (id:string){    
-        process.send(getUserMsg(id))
+        // process.send(getUserMsg(id))
+        this.getRes(getUserMsg(id))
     }
 
     async postUser (user:UserDto){
@@ -46,9 +51,13 @@ export class UserSharedRepo {
         process.send(deleteUserMsg(id))
     }
 
-    private getRes<T>(resolve, reject){
-        return (res:resMsg<T>) => {
-            res.data ? resolve(res.data) : reject(ServerError.notFoundErr(res.message))
-        }
+    private getRes<T>(func:Message){
+        return new  Promise ((resolve, reject)=>{
+            const result = process.send(func, ()=>{
+                process.once(func.action, (msg)=>{
+                    resolve(msg['data'])
+                })
+            })
+        })
     } 
 }
