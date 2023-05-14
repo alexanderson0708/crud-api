@@ -14,11 +14,13 @@ Installation
 You should rename file with name **example** => **.env**
 
 ### Scripts
-
+Run application in development mode
 > $ npm run start:dev
 
+Run application in production mode
 > $ npm run start:prod
 
+Run application in cluster mode
 > $ npm run start:dev:multi
 
 > $ npm run start:dev:prod
