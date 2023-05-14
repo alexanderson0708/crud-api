@@ -3,6 +3,7 @@
 import { IncomingMessage } from "node:http"
 import { UserDto } from "./interfaces"
 import ServerError, { ErrorMsg } from "./errors"
+import cluster from "cluster";
 
 
 export const getBody = async(req:IncomingMessage): Promise<UserDto> => {
@@ -34,5 +35,17 @@ export const isValidUser = (user: UserDto) => {
         return true
     }else{
         throw ServerError.badReqErr(ErrorMsg.INVALID_BODY)
+    }
+}
+
+export const instanceType = (mode:string) => {
+    if (mode === 'cluster'){
+        if (cluster.isPrimary){
+            return "Primary"
+        }else{
+            return "Worker"
+        }
+    }else{
+        return "Server"
     }
 }

@@ -1,4 +1,3 @@
-// Here we define the API endpoints for the corresponding component and assign the controller methods to them. Moreover we can add more stuff like
 
 import { IncomingMessage, ServerResponse } from "http";
 import { HttpMethods } from "./interfaces";
@@ -7,25 +6,22 @@ import { UserService } from "./service";
 import { UserRepo } from "./repository";
 import ServerError, { ErrorMsg,  } from "./errors";
 import cluster from "cluster";
+import {UserSharedRepo} from "./sharedRepo";
+
 
 
 export const REGEX_UUID = /^[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}$/
-// export const resCode:number|string = ""
-// export const resMsg:string = ""
 
 export const routes = (processPort:number) => {
-    const userRepo = 
-    // cluster.isWorker ?
-    // new UserSharedRepo()
-    new UserRepo([])
+    const userRepo = cluster.isWorker ? new UserSharedRepo() : new UserRepo([])
     const userService = new UserService(userRepo)
     const userController = new UserController(userService)
  
     return async (req: IncomingMessage, res:ServerResponse<IncomingMessage>) => {
     res.setHeader("Content-type", "application/json")
     const [api, users, id] = req.url.split('/').filter(Boolean)
-
     try{
+        console.log(`execution request: ${req.method} --- ${process.pid} on port ${processPort}`)
         if (api==="api" && users === "users"){
             switch (req.method) {
                 case HttpMethods.GET: 

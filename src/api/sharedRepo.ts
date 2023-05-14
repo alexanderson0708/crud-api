@@ -1,4 +1,4 @@
-import { UserDto } from "./interfaces"
+import {User, UserDto, UserRepositoryInterface} from "./interfaces"
 import ServerError from "./errors";
 
 export const getUserMsg = (id:string) => ({action:"getUser", data:[id]})
@@ -13,51 +13,66 @@ export type postUserMsg = ReturnType<typeof postUserMsg>
 export type putUserMsg = ReturnType<typeof putUserMsg>
 export type deleteUserMsg = ReturnType<typeof deleteUserMsg>
 
-type Message = getUserMsg | getUsersMsg | postUserMsg | putUserMsg | deleteUserMsg
+export type Message = getUserMsg | getUsersMsg | postUserMsg | putUserMsg | deleteUserMsg
 
-export type dataRes<T> = {
-    data:T;
-}
+export type dataRes<T> = T
 export type errRes = {
     status:number;
     message:string;
 }
 export type msgRes<T> = dataRes<T> & errRes
 
-export class UserSharedRepo { 
+export class UserSharedRepo implements UserRepositoryInterface{
     constructor(){
 
     }
 
-    async getUsers(){
-        process.send(getUsersMsg())
-        process.once("message", (msg)=>msg['data'])
+    async getUsers():Promise<User[]|void>{
+       return new Promise((resolve, reject)=>{
+           process.send(getUsersMsg())
+           process.once('message', async (res:msgRes<User[]>)=>{
+               res? resolve(res) : reject(ServerError.notFoundErr(res.message))
+           })
+       })
     }
 
-    async getUser (id:string){    
-        // process.send(getUserMsg(id))
-        this.getRes(getUserMsg(id))
-    }
-
-    async postUser (user:UserDto){
-        process.send(postUserMsg(user))
-    }
-    
-    async putUser (id:string, user:UserDto){
-        process.send(putUserMsg(id, user))
-    }
-
-    async deleteUser (id:string) {
-        process.send(deleteUserMsg(id))
-    }
-
-    private getRes<T>(func:Message){
-        return new  Promise ((resolve, reject)=>{
-            const result = process.send(func, ()=>{
-                process.once(func.action, (msg)=>{
-                    resolve(msg['data'])
-                })
+    async getUser (id:string):Promise<User|void>{
+        return new Promise((resolve, reject)=>{
+            process.send(getUserMsg(id))
+            process.once('message', (res:msgRes<User>)=>{
+                res ? resolve(res) : reject(ServerError.notFoundErr(res.message))
             })
         })
-    } 
+    }
+
+    async postUser (user:UserDto):Promise<User|void>{
+        return new Promise((resolve, reject)=>{
+            process.send(postUserMsg(user))
+            process.once('message', (res:msgRes<User>)=>{
+                res ? resolve(res) : reject(ServerError.notFoundErr(res.message))
+            })
+        })
+    }
+
+    
+    async putUser (id:string, user:UserDto):Promise<User|void>{
+        return new Promise((resolve, reject)=>{
+            process.send(putUserMsg(id, user))
+            process.once('message', (res:msgRes<User>)=>{
+                res ? resolve(res) : reject(ServerError.notFoundErr(res.message))
+            })
+        })
+    }
+
+
+    async deleteUser (id:string):Promise<User[]|void> {
+        return new Promise((resolve, reject)=>{
+            process.send(deleteUserMsg(id))
+            process.once('message', (res:msgRes<User[]>)=>{
+                res ? resolve(res) : reject(ServerError.notFoundErr(res.message))
+            })
+        })
+    }
+
+
 }

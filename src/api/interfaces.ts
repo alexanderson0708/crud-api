@@ -27,16 +27,16 @@ export interface UserControllerInterface {
 
 export interface UserServiceInterface { 
     getUser: (id:string) => Promise<User | void>;
-    getUsers: () => Promise<User[]>;
-    postUser: (user:User) => Promise<User>;
+    getUsers: () => Promise<User[] | void>;
+    postUser: (user:User) => Promise<User| void>;
     putUser: (id:string, user:User) => Promise<User | void>;
     deleteUser: (id:string) => Promise<User[]|void>;
 }
 
 export interface UserRepositoryInterface { 
     getUser: (id:string) => Promise<User | void>;
-    getUsers: () => Promise<User[]>;
-    postUser: (user:User) => Promise<User>;
+    getUsers: () => Promise<User[]|void>;
+    postUser: (user:User) => Promise<User|void>;
     putUser: (id:string, user:User) => Promise<User | void>;
     deleteUser: (id:string) => Promise<User[]|void>;
 }

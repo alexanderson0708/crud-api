@@ -2,9 +2,10 @@
 
 import { UserRepo } from "./repository";
 import { UserDto, UserServiceInterface } from "./interfaces";
+import {UserSharedRepo} from "./sharedRepo";
 
 export class UserService implements UserServiceInterface {
-    constructor (private userRepo : UserRepo){
+    constructor (private userRepo : UserRepo | UserSharedRepo){
         
     }
 

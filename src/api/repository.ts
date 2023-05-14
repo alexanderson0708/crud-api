@@ -9,7 +9,6 @@ export class UserRepo implements UserRepositoryInterface{
     }
 
     async getUsers (): Promise<User[]> {
-        console.log(this.users);
         return this.users
     }
 
@@ -24,7 +23,6 @@ export class UserRepo implements UserRepositoryInterface{
     async postUser (user:UserDto): Promise<User>{
         const newUser = {...user, id:randomUUID()}
         this.users.push(newUser)
-        this.getUsers()
         return newUser
     }
     
